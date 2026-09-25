@@ -43,7 +43,7 @@ public class FlightInfoResource {
     @RequestMapping(method = RequestMethod.GET, path = "/{date}/results")
     public CompletionStage<ResponseEntity<?>> getResults(@PathVariable("date") @NotEmpty String date) {
 
-        return flightInfoService.findFlightByDate(LocalDate.now()).thenApply(maybeResults -> {
+        return flightInfoService.findFlightByDate(LocalDate.parse(date)).thenApply(maybeResults -> {
 
             // no results, no content
             if (maybeResults.isEmpty()) {

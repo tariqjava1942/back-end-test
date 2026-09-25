@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import org.springframework.stereotype.Service;
+import java.time.DayOfWeek;
+import java.util.Comparator;
 
 /**
  * The service implementation of FlightInfoService
@@ -30,7 +32,21 @@ public class FlightInfoServiceImpl implements FlightInfoService {
     @Override
     public CompletionStage<Optional<List<Flight>>> findFlightByDate(LocalDate outboundDate) {
 
-        // FIXME - applicant to complete
-        return flightInfoRepository.findAll();
+        
+    	 return flightInfoRepository.findAll().thenApply(maybeFlights -> {
+
+    	        if (maybeFlights.isEmpty()) {
+    	            return Optional.<List<Flight>>empty();
+    	        }
+
+    	        DayOfWeek dayOfWeek = outboundDate.getDayOfWeek();
+
+    	        List<Flight> flights = maybeFlights.get().stream()
+    	                .filter(flight -> flight.days().contains(dayOfWeek))
+    	                .sorted(Comparator.comparing(Flight::departureTime))
+    	                .toList();
+
+    	        return Optional.of(flights);
+    	    });
     }
 }
